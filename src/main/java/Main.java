@@ -1,7 +1,13 @@
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
+
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type");
+
     public static void main(String[] args) throws Exception {
+        
         while(true) {
             System.out.print("$ ");
 
@@ -18,13 +24,21 @@ public class Main {
                     }
                     doDefault(input);
                     break;
+
+                case "type":
+                    String value = tokens.length > 1 ? tokens[1] : "";
+                    if( BUILTINS.contains(value) ) {
+                        System.out.println(value + " is a shell builtin");
+                    } else {
+                        System.out.println(value + ": not found");
+                    }
+                    break;
                 case "echo":
-                    System.out.println(tokens[1]);
+                    System.out.println(tokens.length > 1 ? tokens[1] : "");
                     break;
                 default:
                     doDefault(input);
             }
-
         }
     }
 
