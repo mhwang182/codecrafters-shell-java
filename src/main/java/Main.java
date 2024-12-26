@@ -54,7 +54,7 @@ public class Main {
                     File processFile = findFile(paths, tokens[0]);
                     if(processFile != null) {
                         runProcess(tokens, processFile);
-                        break;
+                        return;
                     }
                     doDefault(input);
             }
