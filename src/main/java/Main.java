@@ -1,8 +1,6 @@
 import java.io.*;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
@@ -61,13 +59,17 @@ public class Main {
                 case "cd":
                     String newPath = tokens.length > 1 ? tokens[1] : "";
 
-                    File newWorkingPath = new File(newPath);
+                    String updatedPath = mergePaths(newPath, workingPath.getAbsolutePath());
+
+                    File newWorkingPath = new File(updatedPath);
+
                     if (newWorkingPath.exists()) {
                         workingPath = newWorkingPath;
                     } else {
-                        System.out.println("cd: " + newPath + ": No such file or directory");
+                        System.out.println("cd: " + updatedPath + ": No such file or directory");
                     }
                     break;
+
                 default:
                     File processFile = findFile(paths, tokens[0]);
                     if(processFile != null) {
@@ -77,6 +79,33 @@ public class Main {
                     doDefault(input);
             }
         }
+    }
+
+    private static String mergePaths(String newPath, String currentPath) {
+
+        if(newPath.charAt(0) != '.') {
+            return newPath;
+        }
+
+        List<String> oldParts = new ArrayList<>(Arrays.asList(currentPath.split("/")));
+
+        String[] newParts = newPath.split("/");
+
+        for (String newPart : newParts) {
+
+            if (newPart.equals(".")) {
+                continue;
+            }
+
+            if (newPart.equals("..")) {
+                oldParts.removeLast();
+                continue;
+            }
+
+            oldParts.add(newPart);
+        }
+
+        return String.join("/", oldParts);
     }
 
     private static void runProcess(String[] tokens, File processFile) throws IOException {
