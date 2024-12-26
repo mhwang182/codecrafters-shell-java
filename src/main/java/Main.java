@@ -54,7 +54,7 @@ public class Main {
                     File processFile = findFile(paths, tokens[0]);
                     if(processFile != null) {
                         runProcess(tokens, processFile);
-                        return;
+                        break;
                     }
                     doDefault(input);
             }
@@ -70,8 +70,7 @@ public class Main {
 
         Process process = processBuilder.start();
 
-        String result = new String(process.getInputStream().readAllBytes());
-        System.out.println(result);
+        process.getInputStream().transferTo(System.out);
     }
 
     private static void doDefault(String input) {
