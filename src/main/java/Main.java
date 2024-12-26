@@ -10,6 +10,8 @@ public class Main {
 
         String path = System.getenv("PATH");
 
+        String homePath = System.getenv("HOME").isEmpty() ? "" : System.getenv("HOME");
+
         String[] paths = path.split(":");
 
         File workingPath = new File("");
@@ -58,6 +60,12 @@ public class Main {
 
                 case "cd":
                     String newPath = tokens.length > 1 ? tokens[1] : "";
+
+                    if(newPath.length() == 1 && newPath.charAt(0) == '~') {
+                        System.out.println(homePath);
+                        workingPath = new File(homePath);
+                        break;
+                    }
 
                     String updatedPath = mergePaths(newPath, workingPath.getAbsolutePath());
 
