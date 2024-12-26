@@ -62,7 +62,6 @@ public class Main {
                     String newPath = tokens.length > 1 ? tokens[1] : "";
 
                     if(newPath.length() == 1 && newPath.charAt(0) == '~') {
-                        System.out.println(homePath);
                         workingPath = new File(homePath);
                         break;
                     }
