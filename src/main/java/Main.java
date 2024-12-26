@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Main {
 
-    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type");
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd");
 
     public static void main(String[] args) throws Exception {
 
