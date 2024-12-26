@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Set;
@@ -48,6 +49,11 @@ public class Main {
 
                 case "echo":
                     System.out.println(tokens.length > 1 ? tokens[1] : "");
+                    break;
+
+                case "pwd":
+                    File workingPath = new File("");
+                    System.out.println(workingPath.getAbsolutePath());
                     break;
 
                 default:
