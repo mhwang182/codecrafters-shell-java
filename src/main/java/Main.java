@@ -6,13 +6,15 @@ import java.util.Set;
 
 public class Main {
 
-    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd");
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd");
 
     public static void main(String[] args) throws Exception {
 
         String path = System.getenv("PATH");
 
         String[] paths = path.split(":");
+
+        File workingPath = new File("");
 
         while(true) {
             System.out.print("$ ");
@@ -22,6 +24,7 @@ public class Main {
 
             //split after first " "
             String[] tokens = input.split(" ", 2);
+
 
             switch (tokens[0]) {
                 case "exit":
@@ -52,10 +55,19 @@ public class Main {
                     break;
 
                 case "pwd":
-                    File workingPath = new File("");
                     System.out.println(workingPath.getAbsolutePath());
                     break;
 
+                case "cd":
+                    String newPath = tokens.length > 1 ? tokens[1] : "";
+
+                    File newWorkingPath = new File(newPath);
+                    if (newWorkingPath.exists()) {
+                        workingPath = newWorkingPath;
+                    } else {
+                        System.out.println("cd: " + newPath + ": No such file or directory");
+                    }
+                    break;
                 default:
                     File processFile = findFile(paths, tokens[0]);
                     if(processFile != null) {
