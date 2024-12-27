@@ -71,11 +71,22 @@ public class Main {
         String output = input;
         Pattern matcherPattern = Pattern.compile("'([^']*)'");
         Matcher matcher = matcherPattern.matcher(input);
-        while(matcher.find()){
+
+        List<String> matches = new ArrayList<>();
+        int matchIndex = 0;
+
+        while(matcher.find()) {
             String match = matcher.group();
-            output = output.replace(match, match.substring(1, match.length() - 1));
+            matches.add(match);
+            output = output.replace(match, matchIndex + match);
         }
 
+        output = output.trim().replaceAll(" +", " ");
+
+        for(int i = 0; i < matches.size(); i++) {
+            String marker = i + matches.get(i).trim().replaceAll(" +", " ");
+            output = output.replace(marker, matches.get(i).substring(1, matches.get(i).length() - 1));
+        }
         return output;
     }
 }
