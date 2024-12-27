@@ -58,7 +58,9 @@ public class Main {
                     break;
 
                 case "cat":
-                    shell.handleCatCommand(arg);
+                    String[] segments = getLiteralSegments(tokens[1]);
+
+                    shell.handleCatCommand(segments);
                     break;
 
                 default:
@@ -67,26 +69,63 @@ public class Main {
         }
     }
 
+    private static String[] getLiteralSegments(String input) {
+        String output = input;
+        Pattern matcherPattern = Pattern.compile("'([^']*)'");
+        Matcher matcher = matcherPattern.matcher(input);
+
+        int matchIndex = 0;
+
+        Map<String, String> matchesMap = new HashMap<>();
+        //find all the literals and mark
+        while(matcher.find()) {
+            String match = matcher.group();
+            String marker = matchIndex + match.replace(" ", "");
+            matchesMap.put(marker, match);
+            output = output.replace(match, marker);
+            matchIndex++;
+        }
+
+        //remove all extra spaces
+        output = output.trim().replaceAll(" +", " ");
+
+        String[] segments = output.split(" ");
+
+        for(int i = 0; i < segments.length; i++) {
+            if(matchesMap.containsKey(segments[i])) {
+                String literal = matchesMap.get(segments[i]);
+                segments[i] = literal.substring(1, literal.length() - 1);
+            }
+        }
+        return segments;
+    }
+
+
     private static String replaceSingleQuotes(String input) {
         String output = input;
         Pattern matcherPattern = Pattern.compile("'([^']*)'");
         Matcher matcher = matcherPattern.matcher(input);
 
-        List<String> matches = new ArrayList<>();
         int matchIndex = 0;
 
+        Map<String, String> matchesMap = new HashMap<>();
+        //find all the literals and mark
         while(matcher.find()) {
             String match = matcher.group();
-            matches.add(match);
-            output = output.replace(match, matchIndex + match);
+            String marker = matchIndex + match.replace(" ", "");
+            matchesMap.put(marker, match);
+            output = output.replace(match, marker);
+            matchIndex++;
         }
 
+        //remove all extra spaces
         output = output.trim().replaceAll(" +", " ");
 
-        for(int i = 0; i < matches.size(); i++) {
-            String marker = i + matches.get(i).trim().replaceAll(" +", " ");
-            output = output.replace(marker, matches.get(i).substring(1, matches.get(i).length() - 1));
+        for(String key: matchesMap.keySet()) {
+            String match = matchesMap.get(key);
+            output = output.replace(key, match.substring(1, match.length() - 1));
         }
+
         return output;
     }
 }

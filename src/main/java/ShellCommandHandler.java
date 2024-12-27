@@ -88,9 +88,9 @@ public class ShellCommandHandler {
         handleNotFound(String.join(" ", commands));
     }
 
-    public void handleCatCommand(String input) throws IOException {
-        String[] files = input.split(" ");
-        for(String file: files) {
+    public void handleCatCommand(String[] segments) throws IOException {
+
+        for(String file: segments) {
             File currFile = new File(file);
             if(currFile.exists() && currFile.isFile()) {
                 System.out.print(Files.readString(currFile.toPath()));
