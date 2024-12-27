@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd", "cat");
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd");
 
     public static void main(String[] args) throws Exception {
 
