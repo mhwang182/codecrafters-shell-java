@@ -1,20 +1,23 @@
 import java.io.*;
-import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
-    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd");
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd", "cat");
 
     public static void main(String[] args) throws Exception {
 
         String path = System.getenv("PATH");
 
-        String homePath = System.getenv("HOME").isEmpty() ? "" : System.getenv("HOME");
+        File homePath = System.getenv("HOME").isEmpty() ? new File("") : new File(System.getenv("HOME"));
 
         String[] paths = path.split(":");
 
         File workingPath = new File("");
+
+        ShellCommandHandler shell = new ShellCommandHandler(BUILTINS, paths, homePath, workingPath);
 
         while(true) {
             System.out.print("$ ");
@@ -25,126 +28,54 @@ public class Main {
             //split after first " "
             String[] tokens = input.split(" ", 2);
 
+            String command = tokens[0];
+            String arg = tokens.length > 1 ? tokens[1] : "";
 
-            switch (tokens[0]) {
+            arg = replaceSingleQuotes(arg);
+
+            switch (command) {
                 case "exit":
-                    if (tokens.length > 1 && tokens[1].equals("0")) {
+                    if (tokens.length > 1 && arg.equals("0")) {
                         return;
                     }
-                    doDefault(input);
+                    shell.handleNotFound(input);
                     break;
 
                 case "type":
-                    String value = tokens.length > 1 ? tokens[1] : "";
-                    if( BUILTINS.contains(value) ) {
-                        System.out.println(value + " is a shell builtin");
-                        break;
-                    }
-
-                    File file = findFile(paths, value);
-                    if (file != null) {
-                        System.out.println(value + " is " + file);
-                        break;
-                    }
-
-                    System.out.println(value + ": not found");
+                    shell.handleTypeCommand(arg);
                     break;
 
                 case "echo":
-                    System.out.println(tokens.length > 1 ? tokens[1] : "");
+                    shell.handleEchoCommand(arg);
                     break;
 
                 case "pwd":
-                    System.out.println(workingPath.getAbsolutePath());
+                    shell.handlePwdCommand();
                     break;
 
                 case "cd":
-                    String newPath = tokens.length > 1 ? tokens[1] : "";
+                    shell.handleCdCommand(arg);
+                    break;
 
-                    if(newPath.length() == 1 && newPath.charAt(0) == '~') {
-                        workingPath = new File(homePath);
-                        break;
-                    }
-
-                    String updatedPath = mergePaths(newPath, workingPath.getAbsolutePath());
-
-                    File newWorkingPath = new File(updatedPath);
-
-                    if (newWorkingPath.exists()) {
-                        workingPath = newWorkingPath;
-                    } else {
-                        System.out.println("cd: " + updatedPath + ": No such file or directory");
-                    }
+                case "cat":
+                    shell.handleCatCommand(arg);
                     break;
 
                 default:
-                    File processFile = findFile(paths, tokens[0]);
-                    if(processFile != null) {
-                        runProcess(tokens, processFile);
-                        break;
-                    }
-                    doDefault(input);
+                    shell.handleDefault(tokens);
             }
         }
     }
 
-    private static String mergePaths(String newPath, String currentPath) {
-
-        if(newPath.charAt(0) != '.') {
-            return newPath;
+    private static String replaceSingleQuotes(String input) {
+        String output = input;
+        Pattern matcherPattern = Pattern.compile("'([^']*)'");
+        Matcher matcher = matcherPattern.matcher(input);
+        while(matcher.find()){
+            String match = matcher.group();
+            output = output.replace(match, match.substring(1, match.length() - 1));
         }
 
-        List<String> oldParts = new ArrayList<>(Arrays.asList(currentPath.split("/")));
-
-        String[] newParts = newPath.split("/");
-
-        for (String newPart : newParts) {
-
-            if (newPart.equals(".")) {
-                continue;
-            }
-
-            if (newPart.equals("..")) {
-                oldParts.removeLast();
-                continue;
-            }
-
-            oldParts.add(newPart);
-        }
-
-        return String.join("/", oldParts);
-    }
-
-    private static void runProcess(String[] tokens, File processFile) throws IOException {
-
-        String args = tokens.length > 1 ? " " + tokens[1] : "";
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh", "-c", tokens[0] + args);
-        processBuilder.redirectErrorStream(true);
-        processBuilder.directory(new File(processFile.getParent()));
-
-        Process process = processBuilder.start();
-
-        process.getInputStream().transferTo(System.out);
-    }
-
-    private static void doDefault(String input) {
-
-        String output = input + ": command not found";
-        System.out.println(output);
-    }
-
-    private static File findFile(String[] paths, String filename) {
-
-        for(String path: paths) {
-            File folder = new File(path);
-            FilenameFilter filter = (dir, name) -> name.equals(filename);
-            File[] matches = folder.listFiles(filter);
-
-            if (matches != null && matches.length > 0) {
-                return matches[0];
-            }
-
-        }
-        return null;
+        return output;
     }
 }
