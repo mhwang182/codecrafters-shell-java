@@ -27,9 +27,9 @@ public class InputParser {
         return this.argsString;
     }
 
-    public void parseInput(String input) {
+    public void parseInput(String shellInput) {
 
-        input = input + " ";
+        String input = shellInput + " ";
         int i = 0;
 
         String commandString = "";

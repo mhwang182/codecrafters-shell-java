@@ -81,7 +81,7 @@ public class ShellCommandHandler {
 
         File processFile = findFile(this.paths, command);
 
-        String line = command + " " + argString;
+        String line = !argString.isEmpty() ? command + " " + argString : command;
         if(processFile != null) {
             runProcess(line, processFile);
             return;
