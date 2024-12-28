@@ -77,15 +77,16 @@ public class ShellCommandHandler {
         System.out.println(output);
     }
 
-    public void handleDefault(String[] commands) throws IOException {
+    public void handleDefault(String command, String argString) throws IOException {
 
-        File processFile = findFile(this.paths, commands[0]);
+        File processFile = findFile(this.paths, command);
 
+        String line = command + " " + argString;
         if(processFile != null) {
-            runProcess(commands, processFile);
+            runProcess(line, processFile);
             return;
         }
-        handleNotFound(String.join(" ", commands));
+        handleNotFound(line);
     }
 
     public void handleCatCommand(String[] segments) throws IOException {
@@ -98,10 +99,9 @@ public class ShellCommandHandler {
         }
     }
 
-    private static void runProcess(String[] tokens, File processFile) throws IOException {
+    private static void runProcess(String commandLine, File processFile) throws IOException {
 
-        String command = String.join(" ", tokens);
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh", "-c", command);
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh", "-c", commandLine);
         processBuilder.redirectErrorStream(true);
         processBuilder.directory(new File(processFile.getParent()));
 
