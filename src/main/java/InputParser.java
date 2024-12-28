@@ -27,9 +27,8 @@ public class InputParser {
         return this.argsString;
     }
 
-    public void parseInput(String shellInput) {
+    public void parseInput(String input) {
 
-        String input = shellInput + " ";
         int i = 0;
 
         String commandString = "";
@@ -42,6 +41,7 @@ public class InputParser {
         boolean parsingDouble = false;
 
         while(i < input.length()) {
+
             if(!parsingSingle && !parsingDouble && Character.isWhitespace(input.charAt(i))) {
 
                 if(!sb.isEmpty()) {
@@ -54,6 +54,30 @@ public class InputParser {
                 }
                 i++;
                 continue;
+            }
+
+            if(input.charAt(i) == '\\') {
+                if(!parsingSingle && !parsingDouble) {
+                    if(i + 1 < input.length()) {
+                        sb.append(input.charAt(i + 1));
+                        i += 2;
+                        continue;
+                    }
+                }
+
+                if(parsingDouble && i + 1 < input.length()) {
+                    if(input.charAt(i + 1) == 'n') {
+                        sb.append(System.lineSeparator());
+                        i += 2;
+                    } else if(input.charAt(i + 1) == '\\' || input.charAt(i + 1) == '$' || input.charAt(i + 1) == '"') {
+                        sb.append(input.charAt(i + 1));
+                        i += 2;
+                    } else {
+                        sb.append(input.charAt(i));
+                        i++;
+                    }
+                    continue;
+                }
             }
 
             if(!parsingDouble && input.charAt(i) == '\'') {
@@ -82,21 +106,12 @@ public class InputParser {
                 continue;
             }
 
-            if(input.charAt(i) == '\\') {
-
-                if(i + 1 < input.length()) {
-                    if(input.charAt(i + 1) == '\\' || input.charAt(i + 1) == '$' || input.charAt(i + 1) == '"') {
-                        sb.append(input.charAt(i + 1));
-                    } else if(input.charAt(i + 1) == 'n') {
-                        sb.append(System.lineSeparator());
-                    }
-                    i += 2;
-                    continue;
-                }
-            }
-
             sb.append(input.charAt(i));
             i++;
+        }
+
+        if(!parsingSingle && !parsingDouble && !sb.isEmpty()) {
+            argList.add(sb.toString());
         }
 
         this.command = commandString;

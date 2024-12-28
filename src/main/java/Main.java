@@ -51,6 +51,7 @@ public class Main {
                     break;
 
                 case "cat":
+                    System.out.println(Arrays.toString(inputParser.getArgs()));
                     shell.handleCatCommand(inputParser.getArgs());
                     break;
 
