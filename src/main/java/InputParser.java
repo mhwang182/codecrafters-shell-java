@@ -56,8 +56,8 @@ public class InputParser {
                 continue;
             }
 
-            if(input.charAt(i) == '\\') {
-                if(!parsingSingle && !parsingDouble) {
+            if(!parsingSingle && input.charAt(i) == '\\') {
+                if(!parsingDouble) {
                     if(i + 1 < input.length()) {
                         sb.append(input.charAt(i + 1));
                         i += 2;
@@ -98,7 +98,7 @@ public class InputParser {
                 continue;
             }
 
-            if(input.charAt(i) == '\"') {
+            if(!parsingSingle && input.charAt(i) == '\"') {
 
                 if(!sb.isEmpty()) {
                     argList.add(sb.toString());
