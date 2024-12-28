@@ -28,7 +28,7 @@ public class Main {
 
             switch (inputParser.getCommand()) {
                 case "exit":
-                    if (inputParser.getArgs().length > 1 && inputParser.getArgs()[0].equals("0")) {
+                    if (inputParser.getArgs().length > 0 && inputParser.getArgs()[0].equals("0")) {
                         return;
                     }
                     shell.handleNotFound(input);
