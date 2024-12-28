@@ -116,7 +116,11 @@ public class InputParser {
         }
 
         if(!parsingSingle && !parsingDouble && !sb.isEmpty()) {
-            argList.add(sb.toString());
+            if(commandString.isEmpty()) {
+                commandString = sb.toString();
+            } else {
+                argList.add(sb.toString());
+            }
         }
 
         this.command = commandString;
