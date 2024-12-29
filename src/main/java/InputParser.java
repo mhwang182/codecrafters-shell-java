@@ -100,6 +100,12 @@ public class InputParser {
 
             if(!parsingSingle && input.charAt(i) == '\"') {
 
+                //characters after last quote
+                if(parsingDouble && i + 1 < input.length() && Character.isLetterOrDigit(input.charAt(i + 1))) {
+                    i++;
+                    parsingDouble = false;
+                    continue;
+                }
                 if(!sb.isEmpty()) {
                     argList.add(sb.toString());
                     sb = new StringBuilder();
