@@ -65,16 +65,8 @@ public class InputParser {
                     }
                 }
 
-                if(parsingDouble && i + 2 < input.length()) {
-                    if(input.charAt(i + 1) == '\\' && input.charAt(i + 2) == 'n') {
-                        sb.append(System.lineSeparator());
-                        i += 3;
-                        continue;
-                    }
-                }
-
                 if(parsingDouble && i + 1 < input.length()) {
-                    if(input.charAt(i + 1) == '\\' || input.charAt(i + 1) == '$' || input.charAt(i + 1) == '"') {
+                    if(input.charAt(i + 1) == '\\' || input.charAt(i + 1) == '$' || input.charAt(i + 1) == '"' || input.charAt(i + 1) == '\n') {
                         sb.append(input.charAt(i + 1));
                         i += 2;
                     } else {
