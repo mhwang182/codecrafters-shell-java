@@ -94,7 +94,6 @@ public class ShellCommandHandler {
                 return;
             }
         }
-        System.out.println();
     }
 
     public void handleExe(String path) throws IOException {
