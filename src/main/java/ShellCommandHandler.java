@@ -112,11 +112,11 @@ public class ShellCommandHandler {
 
         if(file1.exists() && file1.isFile()) {
             String content = Files.readString(file1.toPath());
-
             overwriteFile(file2, content, false);
         }
 
         if(file1.isDirectory() && !Objects.equals(file1.listFiles(), null)) {
+            file2.delete();
             for(File currFile: file1.listFiles()) {
                 String content = Files.readString(currFile.toPath());
                 overwriteFile(file2, content, true);
