@@ -25,6 +25,7 @@ public class Main {
 
             InputParser inputParser = new InputParser();
             inputParser.parseInput(input);
+            shell.setCommand(inputParser.getCommand());
 
             switch (inputParser.getCommand()) {
                 case "exit":
@@ -62,8 +63,11 @@ public class Main {
                     }
 
                     if(inputParser.isOutputRedirect()) {
-                        int index = inputParser.getRedirectSymbolIndex();;
-                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1], inputParser.getCommand());
+                        int index = inputParser.getRedirectSymbolIndex();
+
+                        String[] args1 = inputParser.getArgs();
+
+                        shell.handleCatOutputRedirect(Arrays.copyOfRange(args1, 0, index), args1[args1.length - 1]);
                         break;
                     }
                     shell.handleCatCommand(inputParser.getArgs());
@@ -72,7 +76,7 @@ public class Main {
                 case "ls":
                     if(inputParser.getRedirectSymbolIndex() > -1) {
                         int index = inputParser.getRedirectSymbolIndex();
-                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1], inputParser.getCommand());
+                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
                         break;
                     }
                     break;

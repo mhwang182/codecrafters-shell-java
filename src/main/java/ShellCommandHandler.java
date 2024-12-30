@@ -12,6 +12,8 @@ public class ShellCommandHandler {
 
     private File workingPath;
 
+    private String command;
+
     public ShellCommandHandler(
             Set<String> builtIns,
             String[] paths,
@@ -22,6 +24,11 @@ public class ShellCommandHandler {
         this.paths = paths;
         this.homePath = homePath;
         this.workingPath = workingPath;
+        this.command = "";
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public void handleTypeCommand(String arg) {
@@ -111,7 +118,17 @@ public class ShellCommandHandler {
         }
     }
 
-    public void handleLsOutputRedirect(String path1, String path2, String command) throws IOException {
+    public void handleCatOutputRedirect(String[] args, String outputPath) throws IOException {
+
+        File[] inputFiles = Arrays.stream(args).map(File::new).toArray(File[]::new);
+
+        File outputFile = new File(outputPath);
+
+        outputFile.delete();
+        multiFileOverwrite(inputFiles, outputFile);
+    }
+
+    public void handleLsOutputRedirect(String path1, String path2) throws IOException {
 
         File file1 = new File(path1);
         File file2 = new File(path2);
@@ -124,6 +141,7 @@ public class ShellCommandHandler {
         if(file1.exists() && file1.isFile()) {
             String content = Files.readString(file1.toPath());
             overwriteFile(file2, content, false);
+            return;
         }
 
         if(file1.isDirectory() && !Objects.equals(file1.listFiles(), null)) {
@@ -133,10 +151,7 @@ public class ShellCommandHandler {
 
             Arrays.sort(filesList, new FilenameComparator());
 
-            for(File currFile: filesList) {
-                String content = Files.readString(currFile.toPath());
-                overwriteFile(file2, content, true);
-            }
+            multiFileOverwrite(filesList, file2);
         }
     }
 
@@ -144,6 +159,18 @@ public class ShellCommandHandler {
 
         File outputFile = new File(outputPath);
         overwriteFile(outputFile, content, false);
+    }
+
+    private void multiFileOverwrite(File[] files, File outputFile) throws IOException {
+
+        for(File currFile: files) {
+            if(currFile.exists()) {
+                String content = Files.readString(currFile.toPath());
+                overwriteFile(outputFile, content, true);
+            } else {
+                System.out.println(this.command + ": " + currFile.getPath() + ": No such file or directory");
+            }
+        }
     }
 
     private static void overwriteFile(File outputFile, String content, boolean append) throws IOException {
