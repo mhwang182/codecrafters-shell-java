@@ -51,6 +51,10 @@ public class Main {
                     break;
 
                 case "cat":
+                    if(input.charAt(0) == '\'' || input.charAt(0) == '\"') {
+                        shell.handleExe(inputParser.getArgs()[0]);
+                        break;
+                    }
                     shell.handleCatCommand(inputParser.getArgs());
                     break;
 

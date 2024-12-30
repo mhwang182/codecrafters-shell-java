@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +95,14 @@ public class ShellCommandHandler {
             if(currFile.exists() && currFile.isFile()) {
                 System.out.print(Files.readString(currFile.toPath()));
             }
+        }
+    }
+
+    public void handleExe(String path) throws IOException {
+
+        File file = new File(path);
+        if(file.exists() && file.isFile()) {
+            System.out.print(Files.readString(file.toPath()));
         }
     }
 

@@ -50,7 +50,7 @@ public class InputParser {
                     } else {
                         argList.add(sb.toString());
                     }
-                    sb = new StringBuilder();
+                    sb.setLength(0);
                 }
                 i++;
                 continue;
@@ -66,7 +66,8 @@ public class InputParser {
                 }
 
                 if(parsingDouble && i + 1 < input.length()) {
-                    if(input.charAt(i + 1) == '\\' || input.charAt(i + 1) == '$' || input.charAt(i + 1) == '"' || input.charAt(i + 1) == '\n') {
+                    char c = input.charAt(i + 1);
+                    if(c == '\\' || c == '$' || c == '"' || c == '\n') {
                         sb.append(input.charAt(i + 1));
                         i += 2;
                     } else {
@@ -79,9 +80,14 @@ public class InputParser {
 
             if(!parsingDouble && input.charAt(i) == '\'') {
 
+                //first non space character is single quote
+                if(commandString.isEmpty() && !parsingSingle) {
+                    commandString = "cat";
+                }
+
                 if(!sb.isEmpty()) {
                     argList.add(sb.toString());
-                    sb = new StringBuilder();
+                    sb.setLength(0);
                     parsingSingle = false;
                 } else {
                     parsingSingle = true;
@@ -92,6 +98,11 @@ public class InputParser {
 
             if(!parsingSingle && input.charAt(i) == '\"') {
 
+                //first non space character is double quote
+                if(commandString.isEmpty() && !parsingDouble) {
+                    commandString = "cat";
+                }
+
                 //characters after last quote
                 if(parsingDouble && i + 1 < input.length() && Character.isLetterOrDigit(input.charAt(i + 1))) {
                     i++;
@@ -100,7 +111,7 @@ public class InputParser {
                 }
                 if(!sb.isEmpty()) {
                     argList.add(sb.toString());
-                    sb = new StringBuilder();
+                    sb.setLength(0);
                     parsingDouble = false;
                 } else {
                     parsingDouble = true;
