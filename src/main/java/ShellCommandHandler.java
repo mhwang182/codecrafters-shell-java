@@ -111,10 +111,15 @@ public class ShellCommandHandler {
         }
     }
 
-    public void handleLsOutputRedirect(String path1, String path2) throws IOException {
+    public void handleLsOutputRedirect(String path1, String path2, String command) throws IOException {
 
         File file1 = new File(path1);
         File file2 = new File(path2);
+
+        if(!file1.exists()) {
+            System.out.println(command + ": " + file1.getPath() + ": No such file or directory");
+            return;
+        }
 
         if(file1.exists() && file1.isFile()) {
             String content = Files.readString(file1.toPath());

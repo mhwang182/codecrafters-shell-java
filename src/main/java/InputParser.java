@@ -34,6 +34,10 @@ public class InputParser {
         return this.redirectSymbolIndex;
     }
 
+    public boolean isOutputRedirect() {
+        return this.redirectSymbolIndex > -1;
+    }
+
     public void parseInput(String input) {
 
         int i = 0;

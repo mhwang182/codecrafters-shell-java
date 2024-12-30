@@ -39,7 +39,7 @@ public class Main {
                     break;
 
                 case "echo":
-                    if(inputParser.getRedirectSymbolIndex() > -1) {
+                    if(inputParser.isOutputRedirect()) {
                         int index = inputParser.getRedirectSymbolIndex();
                         shell.handleEchoOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
                         break;
@@ -60,13 +60,19 @@ public class Main {
                         shell.handleExe(inputParser.getArgs()[1]);
                         break;
                     }
+
+                    if(inputParser.isOutputRedirect()) {
+                        int index = inputParser.getRedirectSymbolIndex();;
+                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1], inputParser.getCommand());
+                        break;
+                    }
                     shell.handleCatCommand(inputParser.getArgs());
                     break;
 
                 case "ls":
                     if(inputParser.getRedirectSymbolIndex() > -1) {
                         int index = inputParser.getRedirectSymbolIndex();
-                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
+                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1], inputParser.getCommand());
                         break;
                     }
                     break;
