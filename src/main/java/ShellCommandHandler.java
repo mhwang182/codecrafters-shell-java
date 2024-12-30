@@ -117,7 +117,12 @@ public class ShellCommandHandler {
 
         if(file1.isDirectory() && !Objects.equals(file1.listFiles(), null)) {
             file2.delete();
+
+            File[] filesList = file1.listFiles();
+
+            Arrays.sort(filesList, new FilenameComparator());
             for(File currFile: file1.listFiles()) {
+                System.out.println(currFile.getName());
                 String content = Files.readString(currFile.toPath());
                 overwriteFile(file2, content, true);
             }
