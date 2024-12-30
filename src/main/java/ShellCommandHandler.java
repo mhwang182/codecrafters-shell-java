@@ -88,7 +88,14 @@ public class ShellCommandHandler {
         for(String file: segments) {
             File currFile = new File(file);
             if(currFile.exists() && currFile.isFile()) {
-                System.out.print(Files.readString(currFile.toPath()));
+                String content = Files.readString(currFile.toPath());
+
+                if(content.charAt(content.length() - 1) == '\n') {
+                    System.out.print(content);
+                } else {
+                    System.out.println(content);
+                }
+
             } else {
                 System.out.println("cat: " + currFile.getPath() + ": No such file or directory");
                 return;
