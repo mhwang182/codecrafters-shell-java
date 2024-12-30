@@ -1,9 +1,6 @@
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ShellCommandHandler {
 
@@ -115,20 +112,27 @@ public class ShellCommandHandler {
         if(file1.exists() && file1.isFile()) {
             String content = Files.readString(file1.toPath());
 
-            overwriteFile(file2, content);
+            overwriteFile(file2, content, false);
+        }
+
+        if(file1.isDirectory() && !Objects.equals(file1.listFiles(), null)) {
+            for(File currFile: file1.listFiles()) {
+                String content = Files.readString(currFile.toPath());
+                overwriteFile(file2, content, true);
+            }
         }
     }
 
     public void handleEchoOutputRedirect(String content, String outputPath) throws IOException {
 
         File outputFile = new File(outputPath);
-        overwriteFile(outputFile, content);
+        overwriteFile(outputFile, content, false);
     }
 
-    private static void overwriteFile(File outputFile, String content) throws IOException {
+    private static void overwriteFile(File outputFile, String content, boolean append) throws IOException {
 
         outputFile.createNewFile();
-        DataOutputStream outputStream= new DataOutputStream(new FileOutputStream(outputFile,false));
+        DataOutputStream outputStream= new DataOutputStream(new FileOutputStream(outputFile,append));
 
         outputStream.write(content.getBytes());
         outputStream.close();
