@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
 
-    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd");
+    private static final Set<String> BUILTINS = Set.of("exit", "echo", "type", "pwd", "cd", "ls");
 
     public static void main(String[] args) throws Exception {
 
@@ -39,6 +39,11 @@ public class Main {
                     break;
 
                 case "echo":
+                    if(inputParser.getRedirectSymbolIndex() > -1) {
+                        int index = inputParser.getRedirectSymbolIndex();
+                        shell.handleEchoOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
+                        break;
+                    }
                     shell.handleEchoCommand(inputParser.getArgsString());
                     break;
 
@@ -56,6 +61,14 @@ public class Main {
                         break;
                     }
                     shell.handleCatCommand(inputParser.getArgs());
+                    break;
+
+                case "ls":
+                    if(inputParser.getRedirectSymbolIndex() > -1) {
+                        int index = inputParser.getRedirectSymbolIndex();
+                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
+                        break;
+                    }
                     break;
 
                 default:

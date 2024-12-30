@@ -9,10 +9,13 @@ public class InputParser {
 
     private String argsString;
 
+    private int redirectSymbolIndex;
+
     public InputParser() {
         this.command = "";
         this.args = new String[0];
         this.argsString = "";
+        this.redirectSymbolIndex = -1;
     }
 
     public String getCommand() {
@@ -25,6 +28,10 @@ public class InputParser {
 
     public String getArgsString() {
         return this.argsString;
+    }
+
+    public int getRedirectSymbolIndex() {
+        return this.redirectSymbolIndex;
     }
 
     public void parseInput(String input) {
@@ -42,18 +49,25 @@ public class InputParser {
 
         while(i < input.length()) {
 
-            if(!parsingSingle && !parsingDouble && Character.isWhitespace(input.charAt(i))) {
+            if(!parsingSingle && !parsingDouble) {
 
-                if(!sb.isEmpty()) {
-                    if(commandString.isEmpty()) {
-                        commandString = sb.toString();
-                    } else {
-                        argList.add(sb.toString());
+                if(Character.isWhitespace(input.charAt(i))) {
+                    if(!sb.isEmpty()) {
+
+                        if(commandString.isEmpty()) {
+                            commandString = sb.toString();
+                        } else if(i > 0 && input.charAt(i - 1) == '>') {
+                            argList.add(sb.toString());
+                            this.redirectSymbolIndex = argList.size() - 1;
+                        } else {
+                            argList.add(sb.toString());
+                        }
                     }
+
                     sb.setLength(0);
+                    i++;
+                    continue;
                 }
-                i++;
-                continue;
             }
 
             if(!parsingSingle && input.charAt(i) == '\\') {

@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +92,9 @@ public class ShellCommandHandler {
             File currFile = new File(file);
             if(currFile.exists() && currFile.isFile()) {
                 System.out.print(Files.readString(currFile.toPath()));
+            } else {
+                System.out.println("cat: " + currFile.getPath() + ": No such file or directory");
+                return;
             }
         }
     }
@@ -104,6 +105,33 @@ public class ShellCommandHandler {
         if(file.exists() && file.isFile()) {
             System.out.print(Files.readString(file.toPath()));
         }
+    }
+
+    public void handleLsOutputRedirect(String path1, String path2) throws IOException {
+
+        File file1 = new File(path1);
+        File file2 = new File(path2);
+
+        if(file1.exists() && file1.isFile()) {
+            String content = Files.readString(file1.toPath());
+
+            overwriteFile(file2, content);
+        }
+    }
+
+    public void handleEchoOutputRedirect(String content, String outputPath) throws IOException {
+
+        File outputFile = new File(outputPath);
+        overwriteFile(outputFile, content);
+    }
+
+    private static void overwriteFile(File outputFile, String content) throws IOException {
+
+        outputFile.createNewFile();
+        DataOutputStream outputStream= new DataOutputStream(new FileOutputStream(outputFile,false));
+
+        outputStream.write(content.getBytes());
+        outputStream.close();
     }
 
     private static void runProcess(String commandLine, File processFile) throws IOException {
