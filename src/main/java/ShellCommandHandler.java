@@ -92,21 +92,21 @@ public class ShellCommandHandler {
 
     public void handleCatCommand(String[] segments) throws IOException {
 
+        String lastString = "";
         for(String file: segments) {
             File currFile = new File(file);
             if(currFile.exists() && currFile.isFile()) {
                 String content = Files.readString(currFile.toPath());
-
-                if(content.charAt(content.length() - 1) == '\n') {
-                    System.out.print(content);
-                } else {
-                    System.out.println(content);
-                }
-
+                lastString = content;
+                System.out.print(content);
             } else {
                 System.out.println("cat: " + currFile.getPath() + ": No such file or directory");
                 return;
             }
+        }
+
+        if(lastString.charAt(lastString.length() - 1) != '\n') {
+            System.out.println();
         }
     }
 
