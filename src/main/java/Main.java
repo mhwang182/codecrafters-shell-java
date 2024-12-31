@@ -54,6 +54,11 @@ public class Main {
                         break;
                     }
                     shell.handleEchoCommand(inputParser.getArgsString());
+                    if(!inputParser.getOutputFilePath().isEmpty()) {
+                        File file = new File(inputParser.getOutputFilePath());
+                        file.createNewFile();
+                    }
+
                     break;
 
                 case "pwd":
