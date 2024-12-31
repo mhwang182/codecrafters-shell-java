@@ -14,6 +14,8 @@ public class ShellCommandHandler {
 
     private String command;
 
+    private String outputFile;
+
     public ShellCommandHandler(
             Set<String> builtIns,
             String[] paths,
@@ -25,10 +27,15 @@ public class ShellCommandHandler {
         this.homePath = homePath;
         this.workingPath = workingPath;
         this.command = "";
+        this.outputFile = "";
     }
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public void setOutputFile(String path) {
+        this.outputFile = path;
     }
 
     public void handleTypeCommand(String arg) {
@@ -94,18 +101,18 @@ public class ShellCommandHandler {
 
         String lastString = "";
         for(String file: segments) {
+
             File currFile = new File(file);
             if(currFile.exists() && currFile.isFile()) {
                 String content = Files.readString(currFile.toPath());
                 lastString = content;
                 System.out.print(content);
             } else {
-                System.out.println("cat: " + currFile.getPath() + ": No such file or directory");
-                return;
+                printNoFileDirectory(currFile.getPath());
             }
         }
 
-        if(lastString.charAt(lastString.length() - 1) != '\n') {
+        if(lastString.isEmpty() || lastString.charAt(lastString.length() - 1) != '\n') {
             System.out.println();
         }
     }
@@ -128,13 +135,21 @@ public class ShellCommandHandler {
         multiFileOverwrite(inputFiles, outputFile);
     }
 
+    public void handleLs(String path) throws IOException {
+        File file = new File(path);
+
+        if(!file.exists()) {
+            printNoFileDirectory(path);
+        }
+    }
+
     public void handleLsOutputRedirect(String path1, String path2) throws IOException {
 
         File file1 = new File(path1);
         File file2 = new File(path2);
 
         if(!file1.exists()) {
-            System.out.println(command + ": " + file1.getPath() + ": No such file or directory");
+            printNoFileDirectory(file1.getPath());
             return;
         }
 
@@ -168,7 +183,7 @@ public class ShellCommandHandler {
                 String content = Files.readString(currFile.toPath());
                 overwriteFile(outputFile, content, true);
             } else {
-                System.out.println(this.command + ": " + currFile.getPath() + ": No such file or directory");
+                printNoFileDirectory(currFile.getPath());
             }
         }
     }
@@ -233,6 +248,18 @@ public class ShellCommandHandler {
         }
 
         return String.join("/", oldParts);
+    }
+
+    private void printNoFileDirectory(String path) throws IOException {
+
+        String message = this.command + ": " + path + ": No such file or directory";
+        if(this.outputFile.isEmpty()) {
+            System.out.println(message);
+            return;
+        }
+
+        File outputFile = new File(this.outputFile);
+        overwriteFile(outputFile, message, false);
     }
 
 }

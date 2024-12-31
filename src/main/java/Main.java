@@ -27,6 +27,14 @@ public class Main {
             inputParser.parseInput(input);
             shell.setCommand(inputParser.getCommand());
 
+//            System.out.println(inputParser.getStdType());
+//            System.out.println(Arrays.toString(inputParser.getArgs()));
+//            System.out.println(inputParser.getOutputFilePath());
+
+            if(inputParser.getStdType() == StdType.STDERR) {
+                shell.setOutputFile(inputParser.getOutputFilePath());
+            }
+
             switch (inputParser.getCommand()) {
                 case "exit":
                     if (inputParser.getArgs().length > 0 && inputParser.getArgs()[0].equals("0")) {
@@ -40,9 +48,9 @@ public class Main {
                     break;
 
                 case "echo":
-                    if(inputParser.isOutputRedirect()) {
-                        int index = inputParser.getRedirectSymbolIndex();
-                        shell.handleEchoOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
+                    if(inputParser.getStdType() == StdType.STDOUT) {
+                        int len = inputParser.getArgs().length;
+                        shell.handleEchoOutputRedirect(inputParser.getArgs()[len - 1], inputParser.getOutputFilePath());
                         break;
                     }
                     shell.handleEchoCommand(inputParser.getArgsString());
@@ -62,23 +70,28 @@ public class Main {
                         break;
                     }
 
-                    if(inputParser.isOutputRedirect()) {
-                        int index = inputParser.getRedirectSymbolIndex();
+                    if(inputParser.getStdType() == StdType.STDOUT) {
 
-                        String[] args1 = inputParser.getArgs();
-
-                        shell.handleCatOutputRedirect(Arrays.copyOfRange(args1, 0, index), args1[args1.length - 1]);
+                        shell.handleCatOutputRedirect(inputParser.getArgs(), inputParser.getOutputFilePath());
                         break;
                     }
                     shell.handleCatCommand(inputParser.getArgs());
                     break;
 
                 case "ls":
-                    if(inputParser.getRedirectSymbolIndex() > -1) {
-                        int index = inputParser.getRedirectSymbolIndex();
-                        shell.handleLsOutputRedirect(inputParser.getArgs()[index - 1], inputParser.getArgs()[index + 1]);
+                    if(inputParser.getStdType() == StdType.STDOUT) {
+                        int len = inputParser.getArgs().length;
+
+                        shell.handleLsOutputRedirect(inputParser.getArgs()[len - 1], inputParser.getOutputFilePath());
                         break;
                     }
+
+                    shell.handleLs(inputParser.getArgs()[0]);
+                    break;
+
+                case "delete":
+                    File file = new File(inputParser.getArgs()[0]);
+                    file.delete();
                     break;
 
                 default:

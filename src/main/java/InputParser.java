@@ -9,13 +9,16 @@ public class InputParser {
 
     private String argsString;
 
-    private int redirectSymbolIndex;
+    private String outputFilePath;
+
+    private StdType stdType;
 
     public InputParser() {
         this.command = "";
         this.args = new String[0];
         this.argsString = "";
-        this.redirectSymbolIndex = -1;
+        this.outputFilePath = "";
+        this.stdType = StdType.NONE;
     }
 
     public String getCommand() {
@@ -30,12 +33,12 @@ public class InputParser {
         return this.argsString;
     }
 
-    public int getRedirectSymbolIndex() {
-        return this.redirectSymbolIndex;
+    public StdType getStdType() {
+        return this.stdType;
     }
 
-    public boolean isOutputRedirect() {
-        return this.redirectSymbolIndex > -1;
+    public String getOutputFilePath() {
+        return this.outputFilePath;
     }
 
     public void parseInput(String input) {
@@ -61,10 +64,21 @@ public class InputParser {
                         if(commandString.isEmpty()) {
                             commandString = sb.toString();
                         } else if(i > 0 && input.charAt(i - 1) == '>') {
-                            argList.add(sb.toString());
-                            this.redirectSymbolIndex = argList.size() - 1;
+                            String symbol = sb.toString();
+//                            argList.add(symbol);
+
+                            if(symbol.length() > 1 && symbol.charAt(symbol.length() - 2) == '2') {
+                                this.stdType = StdType.STDERR;
+                            } else {
+                                this.stdType = StdType.STDOUT;
+                            }
+
                         } else {
-                            argList.add(sb.toString());
+                            if(this.stdType != StdType.NONE) {
+                                outputFilePath = sb.toString();
+                            } else {
+                                argList.add(sb.toString());
+                            }
                         }
                     }
 
@@ -146,7 +160,11 @@ public class InputParser {
             if(commandString.isEmpty()) {
                 commandString = sb.toString();
             } else {
-                argList.add(sb.toString());
+                if(this.stdType != StdType.NONE) {
+                    outputFilePath = sb.toString();
+                } else {
+                    argList.add(sb.toString());
+                }
             }
         }
 
